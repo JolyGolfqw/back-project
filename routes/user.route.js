@@ -9,6 +9,7 @@ const {
   loginValidation,
 } = require("../middlewares/validation.middleware");
 const handleValidationError = require("../middlewares/handleValidationError");
+const fileMiddleware = require("../middlewares/file.middleware");
 
 router.post(
   "/registration",
@@ -25,6 +26,6 @@ router.post(
 router.get("/user", authMiddleware, userController.getUser); // вывод пользователя
 router.get("/find-user/:id", userController.findUser); // вывод пользователя
 router.get("/find-users", userController.getUsers); // вывод пользователя
-router.patch("/user/update", authMiddleware, userController.updateUser); // изменение данных
+router.patch("/user/update", authMiddleware, fileMiddleware.single('avatar'), userController.updateUser); // изменение данных
 router.delete("/user/delete", authMiddleware, userController.deleteUser); // удаление пользователя
 module.exports = router;

@@ -1,19 +1,14 @@
 const multer = require("multer");
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, "images");
-  },
-  filename(req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
+const SharpMulter  =  require("sharp-multer");
 
-const types = ["image/png", "image/jpeg", "image/jpg"];
-const fileFilter = (req, file, cb) => {
-  if (types.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-module.exports = multer({ storage, fileFilter });
+const storage =  
+ SharpMulter ({
+              destination:(req, file, callback) =>callback(null, "images"),
+              imageOptions:{
+               fileFormat: "jpg",
+               quality: 80,
+               resize: { width: 500, height: 500 },
+                 }
+           });
+const upload  =  multer({ storage });
+module.exports = upload

@@ -2,6 +2,9 @@ const { JsonWebTokenError } = require("jsonwebtoken");
 const User = require("../models/User.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const sharp = require("sharp");
+const fs = require('fs');
+const path = require("path");
 
 module.exports.userController = {
   // Регистрация пользователя
@@ -74,25 +77,25 @@ module.exports.userController = {
   },
   // обновление данных пользователя
   updateUser: async (req, res) => {
-    const { name, subName, email, password } = req.body;
+    const { name, subName, email, status } = req.body;
     const userId = req.user.id;
     try {
+
+      console.log(name)
       // Найти пользователя по его ID
       const user = await User.findById(userId);
-      console.log(userId);
 
       if (!user) {
         return res.status(404).json({ error: "Пользователь не найден" });
       }
-      const hash = await bcrypt.hash(
-        password,
-        Number(process.env.BCRYPT_ROUNDS)
-      );
+
       // Обновить свойства пользователя
       user.name = name || user.name;
       user.subName = subName || user.subName;
       user.email = email || user.email;
-      user.password = password !== "" ? hash : user.password;
+      user.avatar = req.file ? req.file.path : user.avatar
+      user.status = status || user.status
+
 
       // Сохранить обновленные данные пользователя
       await user.save();
@@ -101,7 +104,7 @@ module.exports.userController = {
     } catch (error) {
       res
         .status(500)
-        .json({ error: "Ошибка при обновлении данных пользователя" });
+        .json({ error: "Ошибка при обновлении данных пользователя" + ' ' + error.message});
     }
   },
 
